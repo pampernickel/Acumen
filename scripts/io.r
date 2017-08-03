@@ -53,12 +53,6 @@ procPlates <- function(mat, drug.map, control.map, pos, neg, fin.map=""){
   # negative controls for an experiment
   # pos and neg are positive and negative controls, to be chosen among the drugs
   # in the control.map
-  
-  if (!is.loaded("gdata")){
-    library(gdata)    
-  }
-  
-  read.xls(drug.map) -> dm
   if (fin.map != ""){
     read.csv(fin.map, stringsAsFactors = F) -> fm
     sapply(names(mat), function(x) fm$code[which(fm$file %in% x)]) -> code.map
@@ -105,8 +99,6 @@ normalize <- function(control.map, mat, pos, neg){
     # and normalize based on the specified pos and neg;
     # normalize based on the ff. formula:
     # data-pos.control/neg.control-pos.control
-    unique(cm$Column) -> cind
-    mat[[i]][,-cind] -> d
     mean(as.numeric(vals[[which(names(vals) %in% pos)]])) -> pc
     mean(as.numeric(vals[[which(names(vals) %in% neg)]])) -> nc
     (d-pc)/(nc-pc) -> dnorm[[i]]
@@ -120,6 +112,14 @@ getDelta <- function(matn, p1="KO", p2="WT", drug.map){
   # p1 = prefix set 1; p2 = prefix set 2;
   # the assumption is that the files are automatically named,
   # and have tags as WT/KO
+  if (!is.loaded("gdata")){
+    library(gdata)    
+  }
+  read.xls(drug.map) -> dm
+  
+  # convert dm$position..384. in row, column coordinates of DM
+  
+  
   grep(p1, names(matn)) -> p1
   grep(p2, names(matn)) -> p2
   
@@ -129,6 +129,7 @@ getDelta <- function(matn, p1="KO", p2="WT", drug.map){
       matn[[p1[i]]]-matn[[p2[i]]] -> diffn[[i]]
     }
     names(diffn) <- names(matn)[p1]
+    
     
   } else {
     stop("Not all samples have a pair. Please check your data folder to ensure that none of the files are missing.")
