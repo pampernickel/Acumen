@@ -78,9 +78,9 @@ normalize <- function(control.map, mat, pos, neg){
   gsub("_plate.csv", "", sapply(nn, function(x) x[length(x)])) -> nn
   
   for (i in 1:length(mat)){
+    mat[[i]] -> d
     apply(cm, 1, function(x){
       # get collection of coords
-      mat[[i]] -> d
       which(rownames(d) %in% x[3]) -> start
       nrow(d) -> end
       seq(start, end, by=as.numeric(x[5])) -> int
