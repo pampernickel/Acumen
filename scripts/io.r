@@ -163,3 +163,18 @@ getDelta <- function(matn, p1="KO", p2="WT", drug.map){
   
   return(dms)
 }
+
+getTop <- function(dms, perc=.05, dir=c("pos", "neg", "all")){
+  # get top x% of extremes in dms
+  ceiling(perc*nrow(dms)) -> fin
+  if (dir %in% "pos"){
+    dms[1:fin,] -> tops
+  } else if (dir %in% "neg"){
+    dms[(nrow(dms)-fin-1):nrow(dms),] -> tops
+  } else {
+    # get top x% and bottom x%
+    dms[c(c(1:fin), 
+          c((nrow(dms)-fin-1):nrow(dms))),] -> tops
+  }
+  return(tops)
+}
