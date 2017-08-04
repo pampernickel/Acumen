@@ -154,11 +154,12 @@ getDelta <- function(matn, p1="KO", p2="WT", drug.map){
       as.character(dms$Drug.name) -> dms$Drug.name
       colnames(dms)[(ncol(dms)-2):ncol(dms)] <- c("KO", "WT", "diff")
       dms[rev(order(dms$diff)),] -> dms
-      
     } else {
       stop("Number of plates specified on drug map does not match the number of files.")
     }
   } else {
     stop("Not all samples have a pair. Please check your data folder to ensure that none of the files are missing.")
   }
+  
+  return(dms)
 }
