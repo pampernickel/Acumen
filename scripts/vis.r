@@ -48,3 +48,22 @@ visControls <- function(control.map, mat){
           axis.title=element_text(size=14))
   dev.off()
 }
+
+visTops <- function(dms, tops){
+  if (!is.loaded("ggplot2")){
+    library(ggplot2)
+  }
+  
+  labs <- rep("o", nrow(dms))
+  labs[which(dms$Drug.name %in% tops$Drug.name)] <- "top"
+  cbind(dms, labs) -> vis
+  
+  # sort x based on current order on vis
+  vis[order(vis$diff),] -> vis
+  vis$Drug.name <- factor(vis$Drug.name, levels = vis$Drug.name)
+  ggplot(vis, aes(x=Drug.name, y=diff, fill = labs))+
+    geom_bar(stat="identity", width=0.7, position = position_dodge(width=0.4))+
+    theme(axis.line.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.title.y = element_text(face="bold",angle=90))
+  
+}
