@@ -133,7 +133,7 @@ getDelta <- function(matn, p1="KO", p2="WT", drug.map){
     as.character(dms$plate.ID..384.) -> dms$plate.ID..384.
     as.character(unique(dms$plate.ID..384.)) -> ids
     if (length(ids) == length(diffn)){
-      all.res <- c()
+      all.res <- matrix(0, nrow=0, ncol=3)
       for (i in 1:length(ids)){
         dms[which(dms$plate.ID..384. %in% ids[i]),] -> dmss
         apply(dmss, 1, function(x){
@@ -141,14 +141,20 @@ getDelta <- function(matn, p1="KO", p2="WT", drug.map){
           substr(coords, 1, 1) -> row
           as.numeric(substr(coords, 2, nchar(coords))) -> col
           diffn[[i]][which(rownames(diffn[[i]]) %in% row), which(colnames(diffn[[i]]) %in% col)] -> res
+          matn[[p1[i]]][which(rownames(matn[[p1[i]]]) %in% row), 
+                        which(colnames(matn[[p1[i]]]) %in% col)] -> r1
+          matn[[p2[i]]][which(rownames(matn[[p2[i]]]) %in% row), 
+                        which(colnames(matn[[p2[i]]]) %in% col)] -> r2
+          c(r1, r2, res) -> res
           return(res)
         }) -> res
-        c(all.res, res) -> all.res
+        rbind(all.res, t(res)) -> all.res
       }
       cbind(dms, all.res) -> dms
       as.character(dms$Drug.name) -> dms$Drug.name
-      colnames(dms)[ncol(dms)] <- "diff"
+      colnames(dms)[(ncol(dms)-2):ncol(dms)] <- c("KO", "WT", "diff")
       dms[rev(order(dms$diff)),] -> dms
+      
     } else {
       stop("Number of plates specified on drug map does not match the number of files.")
     }
