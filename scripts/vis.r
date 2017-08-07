@@ -94,7 +94,7 @@ visPlateWControls <- function(vis.mat, mat, control.map){
     names(mat)[i] -> nn
     unlist(strsplit(nn, "\\/")) -> nn
     gsub("_plate.csv", "", nn[length(nn)]) -> nn
-    sapply(strsplit(nn, "\\."), function(x) x[2])
+    sapply(strsplit(nn, "\\."), function(x) x[2]) -> nn
     as.vector(mat[[i]][,-rm.cols]) -> vals
     cbind(vals, rep("other", rep(length(vals))), rep(nn, length(vals))) -> t
     colnames(t) <- colnames(vis.mat)
