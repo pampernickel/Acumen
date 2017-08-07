@@ -98,7 +98,7 @@ visPlateWControls <- function(vis.mat, mat, control.map){
     as.vector(mat[[i]][,-rm.cols]) -> vals
     cbind(vals, rep("other", rep(length(vals))), rep(nn, length(vals))) -> t
     colnames(t) <- colnames(vis.mat)
-    rbind(vis.mat, t) -> t1
+    rbind(vis.mat, t) -> vis.mat
   }
   
   as.data.frame(vis.mat) -> vis.mat
