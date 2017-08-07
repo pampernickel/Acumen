@@ -1,5 +1,5 @@
 
-visControls <- function(control.map, mat){
+visControls <- function(control.map, mat, ret.mode="image"){
   # control.map is a .csv file that contains information on positive and
   # negative controls for an experiment
   # mat are a series of matrices generated using readData(); note that the
@@ -41,16 +41,20 @@ visControls <- function(control.map, mat){
       rbind(vis.mat, t) -> vis.mat
     }
   }
+  
   as.data.frame(vis.mat) -> vis.mat
   as.numeric(as.character(vis.mat$drug)) -> vis.mat$drug
-  
-  #pdf("./results/testVis.pdf",w=30,h=20)
-  ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
-    theme(strip.text = element_text(size=15,face="bold"),
-          axis.text.x=element_text(size=14),
-          axis.text.y=element_text(size=14),
-          axis.title=element_text(size=14)) -> p
-  #dev.off()
+  as.character(vis.mat$plate) -> vis.mat$plate
+  if (ret.mode == "image"){
+    ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
+      theme(strip.text = element_text(size=15,face="bold"),
+            axis.text.x=element_text(size=14),
+            axis.text.y=element_text(size=14),
+            axis.title=element_text(size=14)) -> p
+  } else {
+    vis.mat -> p #return matrix instead
+  }
+    
   return(p)
 }
 
