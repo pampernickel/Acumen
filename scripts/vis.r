@@ -45,6 +45,7 @@ visControls <- function(control.map, mat, ret.mode="image"){
   as.data.frame(vis.mat) -> vis.mat
   as.numeric(as.character(vis.mat$drug)) -> vis.mat$drug
   as.character(vis.mat$plate) -> vis.mat$plate
+  sapply(strsplit(vis.mat$plate, "\\."), function(x) x[2]) -> vis.mat$plate
   if (ret.mode == "image"){
     ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
       theme(strip.text = element_text(size=15,face="bold"),
@@ -78,6 +79,37 @@ visTops <- function(dms, tops){
     geom_bar(stat="identity", width=0.7, position = position_dodge(width=0.4))+
     theme(axis.line.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
           axis.title.y = element_text(face="bold",angle=90)) -> p
+  return(p)
+}
+
+visPlateWControls <- function(vis.mat, mat, control.map){
+  if (!is.loaded("ggplot2")){
+    library(ggplot2)
+  }
+  
+  # add contents of mat to t1, which is generated using visControls
+  cm <- read.csv(control.map, stringsAsFactors = F)
+  unique(cm$Column) -> rm.cols
+  for (i in 1:length(mat)){
+    names(mat)[i] -> nn
+    unlist(strsplit(nn, "\\/")) -> nn
+    gsub("_plate.csv", "", nn[length(nn)]) -> nn
+    
+    as.vector(mat[[i]][,-rm.cols]) -> vals
+    cbind(vals, rep("other", rep(length(vals))), rep(nn, length(vals))) -> t
+    colnames(t) <- colnames(vis.mat)
+    rbind(vis.mat, t) -> t1
+  }
+  
+  as.data.frame(vis.mat) -> vis.mat
+  as.numeric(as.character(vis.mat$drug)) -> vis.mat$drug
+  as.character(vis.mat$plate) -> vis.mat$plate
+  sapply(strsplit(vis.mat$plate, "\\."), function(x) x[2]) -> vis.mat$plate
+  ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
+    theme(strip.text = element_text(size=15,face="bold"),
+          axis.text.x=element_text(size=14),
+          axis.text.y=element_text(size=14),
+          axis.title=element_text(size=14)) -> p
   return(p)
 }
 
