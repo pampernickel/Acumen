@@ -47,11 +47,12 @@ visControls <- function(control.map, mat, ret.mode="image"){
   as.character(vis.mat$plate) -> vis.mat$plate
   sapply(strsplit(vis.mat$plate, "\\."), function(x) x[2]) -> vis.mat$plate
   if (ret.mode == "image"){
-    ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
+    ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(aes(y=(..count..)/sum(..count..)), bins=20, alpha=0.5)+facet_wrap(~plate)+
       theme(strip.text = element_text(size=15,face="bold"),
-            axis.text.x=element_text(size=14),
+            axis.text.x=element_text(size=14, angle=90),
             axis.text.y=element_text(size=14),
-            axis.title=element_text(size=14)) -> p
+            axis.title=element_text(size=14))+
+      ylab("Percentage")-> p
   } else {
     vis.mat -> p #return matrix instead
   }
@@ -104,11 +105,17 @@ visPlateWControls <- function(vis.mat, mat, control.map){
   as.data.frame(vis.mat) -> vis.mat
   as.numeric(as.character(vis.mat$drug)) -> vis.mat$drug
   as.character(vis.mat$plate) -> vis.mat$plate
-  ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
+  
+  # create layers
+  vis.mat[which(vis.mat$value %in% "other"),] -> o
+  vis.mat[which(vis.mat$value %ni% "other"),] -> control
+  ggplot(control, aes(x=drug, fill=value))+geom_histogram(aes(y=(..count..)/sum(..count..)), bins=20, alpha=0.5)+
+    geom_histogram(data=o, aes(y=(..count..)/sum(..count..)), bins=20, alpha=0.6, fill="darkgrey")+facet_wrap(~plate)+
     theme(strip.text = element_text(size=15,face="bold"),
-          axis.text.x=element_text(size=14),
+          axis.text.x=element_text(size=14, angle=90),
           axis.text.y=element_text(size=14),
-          axis.title=element_text(size=14)) -> p
+          axis.title=element_text(size=14))+
+    ylab("Percentage") -> p
   return(p)
 }
 
