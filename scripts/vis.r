@@ -94,7 +94,7 @@ visPlateWControls <- function(vis.mat, mat, control.map){
     names(mat)[i] -> nn
     unlist(strsplit(nn, "\\/")) -> nn
     gsub("_plate.csv", "", nn[length(nn)]) -> nn
-    
+    sapply(strsplit(nn, "\\."), function(x) x[2])
     as.vector(mat[[i]][,-rm.cols]) -> vals
     cbind(vals, rep("other", rep(length(vals))), rep(nn, length(vals))) -> t
     colnames(t) <- colnames(vis.mat)
@@ -104,7 +104,6 @@ visPlateWControls <- function(vis.mat, mat, control.map){
   as.data.frame(vis.mat) -> vis.mat
   as.numeric(as.character(vis.mat$drug)) -> vis.mat$drug
   as.character(vis.mat$plate) -> vis.mat$plate
-  sapply(strsplit(vis.mat$plate, "\\."), function(x) x[2]) -> vis.mat$plate
   ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
     theme(strip.text = element_text(size=15,face="bold"),
           axis.text.x=element_text(size=14),
