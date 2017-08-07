@@ -4,6 +4,10 @@ visControls <- function(control.map, mat){
   # negative controls for an experiment
   # mat are a series of matrices generated using readData(); note that the
   # assumption is that the controls are in the same order across the plates
+  if (!is.loaded("ggplot2")){
+    library(ggplot2)
+  }
+  
   cm <- read.csv(control.map, stringsAsFactors = F)
   vis.mat <- matrix(0, nrow=0, ncol=3)
   colnames(vis.mat) <- c("drug", "value", "plate")
@@ -40,13 +44,14 @@ visControls <- function(control.map, mat){
   as.data.frame(vis.mat) -> vis.mat
   as.numeric(as.character(vis.mat$drug)) -> vis.mat$drug
   
-  pdf("./results/testVis.pdf",w=30,h=20)
+  #pdf("./results/testVis.pdf",w=30,h=20)
   ggplot(vis.mat, aes(x=drug, fill=value))+geom_histogram(bins=20, alpha=0.5)+facet_wrap(~plate)+
     theme(strip.text = element_text(size=15,face="bold"),
           axis.text.x=element_text(size=14),
           axis.text.y=element_text(size=14),
-          axis.title=element_text(size=14))
-  dev.off()
+          axis.title=element_text(size=14)) -> p
+  #dev.off()
+  return(p)
 }
 
 visTops <- function(dms, tops){
@@ -68,8 +73,8 @@ visTops <- function(dms, tops){
   ggplot(vis, aes(x=Drug.name, y=diff, fill = labs))+
     geom_bar(stat="identity", width=0.7, position = position_dodge(width=0.4))+
     theme(axis.line.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.title.y = element_text(face="bold",angle=90))
-  
+          axis.title.y = element_text(face="bold",angle=90)) -> p
+  return(p)
 }
 
 subsetDF <- function(df, colname){
