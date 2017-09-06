@@ -68,3 +68,23 @@ getTop <- function(dms, perc=.05, dir=c("pos", "neg", "all")){
   }
   return(tops)
 }
+
+getReading <- function(plate.name, coordinate, matn){
+  # given a set of coordinates, e.g. G15, convert coords
+  # into matrix coordinates, and retrieve the readout for the given coord;
+  # plates are to be given in the numeric form, i.e. "06", "08"
+  myLetters <- LETTERS[1:26]
+  grep(plate.name, names(matn)) -> m
+  substr(coordinate, 1, 1) -> row
+  as.numeric(substr(coordinate, 2, 3)) -> column
+  match(row, myLetters) -> row
+  resMat <- matrix(0, nrow=0, ncol=2)
+  colnames(resMat) <- c("val", "plate")
+  for (i in 1:length(m)){
+    cbind(matn[[m[i]]][row,column], names(matn)[m[i]]) -> t
+    colnames(t) <- colnames(resMat)
+    rbind(resMat, t) -> resMat
+  }
+  return(resMat)
+}
+  
